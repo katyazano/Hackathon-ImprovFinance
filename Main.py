@@ -1,6 +1,9 @@
 from flask import Flask, request, redirect, url_for, render_template
+import bcrypt
 import mysql.connector
-import process
+import cgi
+import MySQLdb
+import os
 
 app = Flask(__name__)
 
@@ -34,9 +37,11 @@ def guardar_registro(usuario, correo, contraseña):
         if conexion.is_connected():
             cursor = conexion.cursor()
 
+            hashed_password = bcrypt.hashpw(contraseña.encode('utf-8'), bcrypt.gensalt())
+
             # Insertar datos en la base de datos
             sql = "INSERT INTO usuarios (usuario, correo, contraseña) VALUES (%s, %s, %s)"
-            valores = (usuario, correo, contraseña)
+            valores = (usuario, correo, hashed_password)
             cursor.execute(sql, valores)
 
             # Confirmar la operación y cerrar cursor
@@ -53,16 +58,71 @@ def guardar_registro(usuario, correo, contraseña):
 def main():
     while True:
         conexion = get_connection()
-        guardar_registro("katy", "sajdjaf@gmail.com", "skafsalfa")
 
 @app.route('/', methods=['GET', 'POST'])
-def login():
+def register():
     if request.method == 'POST':
         usuario = request.form['usuario']
         correo = request.form['correo']
         contraseña = request.form['contraseña']
         guardar_registro(usuario, correo, contraseña)
-    return render_template('index.html')
+    return render_template('register.html')
+
+
+def guardar_login():
+    try:
+        # Connect to MySQL database
+        db = MySQLdb.connect(host="localhost", user="root", passwd="", db="users")
+        cursor = db.cursor()
+
+        # Check if the request method is POST
+        if os.environ['REQUEST_METHOD'] == 'POST':
+            # Get form data
+            form = cgi.FieldStorage()
+            usuario = form.getvalue('usuario')
+            contraseña = form.getvalue('contraseña')
+
+            # Retrieve hashed password from database based on username
+            cursor.execute("SELECT contraseña FROM usuarios WHERE usuario = %s", (usuario,))
+            row = cursor.fetchone()
+
+            if row:
+                hashed_password = row[0]
+
+                # Check if the entered password matches the hashed password
+                if bcrypt.checkpw(contraseña.encode('utf-8'), hashed_password.encode('utf-8')):
+                    # Password is correct
+                    print("<h1>Inicio de sesión exitoso</h1>")
+                    print("<p>Bienvenido, {}!</p>".format(usuario))
+                else:
+                    # Password is incorrect
+                    print("<h1>Error:</h1>")
+                    print("<p>Contraseña incorrecta.</p>")
+            else:
+                # User not found
+                print("<h1>Error:</h1>")
+                print("<p>Usuario no encontrado.</p>")
+        else:
+            # Handle other HTTP methods (e.g., GET)
+            print("<h1>Error:</h1>")
+            print("<p>Método HTTP no permitido.</p>")
+
+    except Exception as e:
+        print("<h1>Error:</h1>")
+        print("<p>", e, "</p>")
+
+    finally:
+        # Close database connection
+        if 'db' in locals() and db is not None:
+            db.close()
+
+def login():
+    print("Content-type: text/html\n")
+    if request.method == 'POST':
+        usuario = request.form['usuario']
+        contraseña = request.form['contraseña']
+        guardar_login(usuario, contraseña)
+        return render_template('login.html')
 
 # Esto permitirá ejecutar el archivo como script de manera independiente para probar la conexión
 if __name__ == "__main__":

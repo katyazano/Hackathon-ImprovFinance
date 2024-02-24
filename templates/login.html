@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <form action="/" method="post">
-    <meta cha  rset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atrato | Inicio Sesion</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script type="text/javascript">
         // Función para manejar el evento de copiar
@@ -29,43 +28,34 @@
 
     <div class="container">
         <div class="form-content">
-            <h1 id="title">Registro</h1>
-            <form action="/" method="post">
+            <h1 id="title">Inicio de sesion</h1>
+            <form method="post">
                 <div class="input-group">
                    <div class="input-field" id="nameInput">
                         <i class="fa-solid fa-user"></i>
-                        <input type="text" id="usuario" name="usuario" placeholder="Usuario" oncopy="bloquearCopiar(event)" onpaste="bloquearPegar(event)" required>
-                    </div>
-                        <div class="input-field">
-                        <i class="fa-solid fa-envelope"></i>
-                        <input type="email" id="correo" name="correo" placeholder="Correo Electronico" oncopy="bloquearCopiar(event)" onpaste="bloquearPegar(event)" required>
+                        <input type="text" placeholder="Usuario" oncopy="bloquearCopiar(event)" onpaste="bloquearPegar(event)" required>
                     </div>
                     <div class="input-field">
                         <i class="fa-solid fa-lock"></i>
-                        <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" required>
+                        <input type="password" placeholder="Contraseña" required>
                     </div>
                     <div class="input-field">
-                        <i class="fa-solid fa-lock"></i>
-                        <input type="password" placeholder="Confirmar contraseña" required>
-                    </div>
-                        <div class="input-field">
                         <div class="g-recaptcha" data-sitekey="6LeX4n0pAAAAAMxlIH__0CUHMtqufhRq7g3yOA3h" >
                         </div>
-                    </div>                     
+                    </div>  
+                    <p>Olvidaste tu contraseña <a href="#"> click aqui</a></p>
                 </div>
-                <button type="submit">Ingresar</button>
                 <br/>
                 <br/>
                 <br/>
                 <div class="btn-field">
-                    <a href="index.html"><button id="signUp" type="button"> Registrarse</button></a>
-                    <a href="index2.html"><button id="signIn" type="button" class="disable"> Iniciar Sesion</button></a>
+                    <a href="/templates/register.html"><button id="signUp" type="button">Registrarse</button></a>
+                    <a href="/templates/login.html"><button id="signIn" type="button" class="disable">Iniciar Sesion</button></a>
                     <br/>
                 </div>
             </form>
         </div>
     </div>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    <script src="app.js"></script>
 </body>
 </html>
