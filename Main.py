@@ -1,4 +1,5 @@
 from flask import Flask, request, redirect, url_for, render_template
+import bcrypt
 import mysql.connector
 import process
 
@@ -34,9 +35,11 @@ def guardar_registro(usuario, correo, contraseña):
         if conexion.is_connected():
             cursor = conexion.cursor()
 
+            hashed_password = bcrypt.hashpw(contraseña.encode('utf-8'), bcrypt.gensalt())
+
             # Insertar datos en la base de datos
             sql = "INSERT INTO usuarios (usuario, correo, contraseña) VALUES (%s, %s, %s)"
-            valores = (usuario, correo, contraseña)
+            valores = (usuario, correo, hashed_password)
             cursor.execute(sql, valores)
 
             # Confirmar la operación y cerrar cursor
@@ -56,13 +59,14 @@ def main():
         guardar_registro("katy", "sajdjaf@gmail.com", "skafsalfa")
 
 @app.route('/', methods=['GET', 'POST'])
-def login():
+def register():
     if request.method == 'POST':
         usuario = request.form['usuario']
         correo = request.form['correo']
         contraseña = request.form['contraseña']
         guardar_registro(usuario, correo, contraseña)
-    return render_template('index.html')
+    return render_template('register.html')
+
 
 # Esto permitirá ejecutar el archivo como script de manera independiente para probar la conexión
 if __name__ == "__main__":
