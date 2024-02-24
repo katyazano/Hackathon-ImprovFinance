@@ -29,7 +29,7 @@
     <div class="container">
         <div class="form-content">
             <h1 id="title">Inicio de sesion</h1>
-            <form method="post">
+            <form action="http://127.0.0.1:5500/templates/register.html" method="post">
                 <div class="input-group">
                    <div class="input-field" id="nameInput">
                         <i class="fa-solid fa-user"></i>
@@ -49,8 +49,8 @@
                 <br/>
                 <br/>
                 <div class="btn-field">
-                    <a href="/templates/register.html"><button id="signUp" type="button">Registrarse</button></a>
-                    <a href="/templates/login.html"><button id="signIn" type="button" class="disable">Iniciar Sesion</button></a>
+                    <a href="/templates/register.html"><button id="register" name="register" type="button">Registrarse</button></a>
+                    <a href="/templates/login.html"><button id="login" name="login" type="button" class="disable">Iniciar Sesion</button></a>
                     <br/>
                 </div>
             </form>

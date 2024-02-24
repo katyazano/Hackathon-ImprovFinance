@@ -30,7 +30,7 @@
     <div class="container">
         <div class="form-content">
             <h1 id="title">Registro</h1>
-            <form action="/" method="post">
+            <form>
                 <div class="input-group">
                    <div class="input-field" id="nameInput">
                         <i class="fa-solid fa-user"></i>
@@ -69,7 +69,35 @@
         function getInputs(){
             let usuarioWeb = document.getElementById("usuario").value;
             let correoWeb = document.getElementById("correo").value;
-            let contraseñaWeb = document.getElementById("contraseña").value;
+            let contrasenaWeb = document.getElementById("contraseña").value;
+
+            var requestData = {
+            usuario: usuarioWeb,
+            correo: correoWeb,
+            contrasena: contrasenaWeb
+        };
+
+        // Configurar los encabezados de la solicitud
+        var headers = new Headers();
+        headers.append("Content-Type", "application/json");
+
+        // Configurar las opciones de la solicitud
+        var options = {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify(requestData) // Convertir los datos a formato JSON
+        };
+
+            fetch('http://127.0.0.1:5000/post_example', options)
+            .then(response => response.text())
+            .then(data => {
+                console.log(data); // Imprimir la respuesta del servidor
+                alert(data); // Mostrar la respuesta en una ventana de alerta
+                window.location.href= "/templates/login.html"
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         }
     </script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
