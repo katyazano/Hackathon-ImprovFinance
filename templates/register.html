@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <form action="/" method="post">
-    <meta cha  rset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atrato | Inicio Sesion</title>
     <link rel="stylesheet" href="/static/style.css">
@@ -30,7 +29,7 @@
     <div class="container">
         <div class="form-content">
             <h1 id="title">Registro</h1>
-            <form>
+            <form id="myForm">
                 <div class="input-group">
                    <div class="input-field" id="nameInput">
                         <i class="fa-solid fa-user"></i>
@@ -42,7 +41,7 @@
                     </div>
                     <div class="input-field">
                         <i class="fa-solid fa-lock"></i>
-                        <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" required>
+                        <input type="password" id="contrasena" name="contrasena" placeholder="Contraseña" required>
                     </div>
                     <div class="input-field">
                         <i class="fa-solid fa-lock"></i>
@@ -53,7 +52,7 @@
                         </div>
                     </div>                     
                 </div>
-                <button type="submit" onclick="getInputs()">Ingresar</button>
+                <button type="submit" onclick="getInputs()" id="submit">Ingresar</button>
                 <br/>
                 <br/>
                 <br/>
@@ -65,18 +64,21 @@
             </form>
         </div>
     </div>
-    <script type="text/javascript">
+    <script >
         function getInputs(){
-            let usuarioWeb = document.getElementById("usuario").value;
-            let correoWeb = document.getElementById("correo").value;
-            let contrasenaWeb = document.getElementById("contraseña").value;
+            var usuarioWeb = document.getElementById("usuario").value;
+            var correoWeb = document.getElementById("correo").value;
+            var contrasenaWeb = document.getElementById("contrasena").value;
 
+            document.getElementById("myForm").reset;
+        
             var requestData = {
             usuario: usuarioWeb,
             correo: correoWeb,
             contrasena: contrasenaWeb
         };
-
+        console.log(requestData);
+        
         // Configurar los encabezados de la solicitud
         var headers = new Headers();
         headers.append("Content-Type", "application/json");

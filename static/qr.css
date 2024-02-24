@@ -78,27 +78,10 @@ form p a{
     margin-left: 3px;
 }
 
-.submitBtn{
-    width: 5vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-basis: 40%;
-    font-size: 16px;
-    background-color: rgb(78, 225, 176);
-    color: #ffffff;
-    height: 40px;
-    border-radius: 10px;
-    border: 0;
-    outline: 0;
-    cursor: pointer;
-    transition: background 1s;
-}
-
 .btn-field{
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 .btn-field button{
@@ -124,4 +107,9 @@ form p a{
     border: 0;
     outline: 0;
     cursor: pointer;
+}
+
+img{
+    height: 40vh;
+    width: 40vw;
 }
