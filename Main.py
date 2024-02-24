@@ -1,44 +1,180 @@
-from flask import Flask, Response, request, redirect, url_for, render_template
-import bcrypt
-import mysql.connector
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import cgi
 import MySQLdb
 import os
+import bcrypt
+import mysql.connector
+import pyotp
+import qrcode
+from PIL import Image
+
 
 app = Flask(__name__)
-@app.route('/submit', methods=['GET', 'POST'])
-def submit():
-    print('hola mundo')
+CORS(app)
+
+
+# Configuración de la conexión a la base de datos
+config = {
+    'user': 'root',
+    'password': '',
+    'host': '127.0.0.1',
+    'database': 'users',
+    'raise_on_warnings': True
+}
+
+conexion = None
+
+def get_connection():
+    global conexion
+    if conexion is None or not conexion.is_connected():
+        try:
+            # Establecer la conexión si no existe o está cerrada
+            conexion = mysql.connector.connect(**config)
+        except mysql.connector.Error as e:
+            print(f'Error al conectar a la base de datos: {e}')
+            raise
+    return conexion
+
+def guardar_registro(usuario, correo, contrasena):
+    try:
+        # Obtener conexión a la base de datos
+        conexion = get_connection()
+        print('log1')
+
+        if conexion.is_connected():
+            cursor = conexion.cursor()
+
+            #hashed_password = bcrypt.hashpw(contrasena.encode('utf-8'), bcrypt.gensalt())
+
+            # Insertar datos en la base de datos
+            sql = "INSERT INTO usuarios (usuario, correo, contraseña) VALUES (%s, %s, %s)"
+            valores = (usuario, correo, contrasena)
+            cursor.execute(sql, valores)
+
+            print(sql)
+
+
+            # Confirmar la operación y cerrar cursor
+            conexion.commit()
+            cursor.close()
+            print("Registro guardado exitosamente.")
+    except mysql.connector.Error as e:
+        print(f'Error al guardar el registro en la base de datos: {e}')
+    finally:
+        # Cerrar la conexión
+        if 'conexion' in locals() and conexion.is_connected():
+            conexion.close()
+
+def guardar_login():
+
+    try:
+        # Connect to MySQL database
+        db = MySQLdb.connect(host="localhost", user="root", passwd="", db="users")
+        cursor = db.cursor()
+
+        # Check if the request method is POST
+        if os.environ['REQUEST_METHOD'] == 'POST':
+            # Get form data
+            form = cgi.FieldStorage()
+            usuario = form.getvalue('usuario')
+            contraseña = form.getvalue('contraseña')
+
+            # Retrieve hashed password from database based on username
+            cursor.execute("SELECT contraseña FROM usuarios WHERE usuario = %s", (usuario,))
+            row = cursor.fetchone()
+
+            if row:
+                hashed_password = row[0]
+
+                # Check if the entered password matches the hashed password
+                if bcrypt.checkpw(contraseña.encode('utf-8'), hashed_password.encode('utf-8')):
+                    # Password is correct
+                    print("<h1>Inicio de sesión exitoso</h1>")
+                    print("<p>Bienvenido, {}!</p>".format(usuario))
+                else:
+                    # Password is incorrect
+                    print("<h1>Error:</h1>")
+                    print("<p>Contraseña incorrecta.</p>")
+            else:
+                # User not found
+                print("<h1>Error:</h1>")
+                print("<p>Usuario no encontrado.</p>")
+        else:
+            # Handle other HTTP methods (e.g., GET)
+            print("<h1>Error:</h1>")
+            print("<p>Método HTTP no permitido.</p>")
+
+    except Exception as e:
+        print("<h1>Error:</h1>")
+        print("<p>", e, "</p>")
+
+    finally:
+        # Close database connection
+        if 'db' in locals() and db is not None:
+            db.close()
+
+def authenticator():
+    # Genera un secreto de 16 caracteres base32
+    secret = pyotp.random_base32()
+
+    # Crea una instancia TOTP usando el secreto
+    totp = pyotp.TOTP(secret)
+
+    # Genera el código OTP
+    otp_code = totp.now()
+
+    # Imprime el secreto y el código QR
+    print("Secreto:", secret)
+    print("Escanee este código QR con Google Authenticator:")
+
+    # Crea la URL para el código QR
+    url = totp.provisioning_uri('usuario', issuer_name="Atrato")
+
+    # Crea y guarda el código QR en un archivo
+    qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4)
+    qr.add_data(url)
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+    img.save("qr_code.png")
+
+    # Imprime el código QR en pantalla
+    img.show()
+
+@app.route('/validate', methods=['POST'])
+def validate():
+    otp_code = request.form['otp']
+
+    # Validate the OTP code
+    if pyotp.TOTP.verify(otp_code):
+        return "OTP is valid"
+    else:
+        return "OTP is invalid"
+
+@app.route('/post_example', methods=['POST'])
+def post_example():
     if request.method == 'POST':
-        data = request
+        data = request.json
+        usuario = data.get('usuario')
+        correo = data.get('correo')
+        contrasena = data.get('contrasena')
         print(data)
-        #usuario = request.form['usuario']
-        #correo = request.form['correo']
-        #contraseña = request.form['contraseña']
-        #guardar_registro(usuario, correo, contraseña)
-        return Response('ok', status=200)    
-    return Response('ok', status=200)    
+        print (usuario)
+        print (correo)
+        print(contrasena)
+        try:
+            guardar_registro(usuario, correo, contrasena)
+        except Exception as e: 
+            print (e)
+        return 'Hello, World!'
+    else:
+        return 'Método no permitido', 405
 
+@app.route('/get_example', methods=['GET'])
+def get_example():
+    return 'Hello, World! (GET method)'
 
-        
-#def main():
- #   while True:
-  #      conexion = get_connection()
-
-
-
-
-#@app.route('/', methods=['GET', 'POST'])
-#def login():
- #   print("Content-type: text/html\n")
-  #  if request.method == 'POST':
-   #     if 'login' in request.form:
-    #        return render_template('login.html')
-    #return render_template('register.html')
-
-#@app.route('/static/<style.css>')
-#def static_file(path):
-  #  cache_timeout = 3600  # Cache timeout in seconds (1 hour)
-   # root_dir = os.path.abspath(os.path.dirname(__file__))
-    #return send_from_directory(os.path.join(root_dir, 'static'), path, cache_timeout=cache_timeout)
-
+# Esto permitirá ejecutar el archivo como script de manera independiente para probar la conexión
+if __name__ == "__main__":
+    app.run(debug=True)    
