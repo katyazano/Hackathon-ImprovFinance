@@ -1,4 +1,4 @@
-from bs4 import BeatifulSoup
+#from bs4 import BeatifulSoup
 from flask import Flask 
 import pandas as pd
 from cryptography.fernet import Fernet
@@ -9,3 +9,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
