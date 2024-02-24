@@ -1,5 +1,8 @@
+from flask import Flask, request, redirect, url_for, render_template
 import mysql.connector
 import process
+
+app = Flask(__name__)
 
 # Configuración de la conexión a la base de datos
 config = {
@@ -50,11 +53,17 @@ def guardar_registro(usuario, correo, contraseña):
 def main():
     while True:
         conexion = get_connection()
-        guardar_registro("jesus", "sajdjaf@gmail.com", "skafsalfa")
-        
+        guardar_registro("katy", "sajdjaf@gmail.com", "skafsalfa")
+
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        usuario = request.form['usuario']
+        correo = request.form['correo']
+        contraseña = request.form['contraseña']
+        guardar_registro(usuario, correo, contraseña)
+    return render_template('index.html')
+
 # Esto permitirá ejecutar el archivo como script de manera independiente para probar la conexión
 if __name__ == "__main__":
-    main()
-    print("Nunca Imprimir")
-
-
+    app.run(debug=True)

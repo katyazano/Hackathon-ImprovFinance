@@ -18,7 +18,7 @@ print("Secreto:", secret)
 print("Escanee este código QR con Google Authenticator:")
 
 # Crea la URL para el código QR
-url = totp.provisioning_uri("usuario@ejemplo.com", issuer_name="Atrato") #cambiar usuario ejemplo por el usuario de cada persona
+url = totp.provisioning_uri('correo', issuer_name="Atrato")
 
 # Crea y guarda el código QR en un archivo
 qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4)
