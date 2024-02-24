@@ -29,8 +29,11 @@ def guardar_registro(usuario, correo, contraseña):
 if __name__ == "__main__":
     # Obtener datos del formulario
     import cgi
+
+    # Este método es válido si estás ejecutando el script en un entorno que maneja formularios CGI
     form = cgi.FieldStorage()
 
+    # Obtener los datos del formulario
     usuario = form.getvalue("usuario")
     correo = form.getvalue("correo")
     contraseña = form.getvalue("contraseña")
